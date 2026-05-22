@@ -4,8 +4,11 @@ import uuid
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from routes.ask import router as ask_router
-from routes.repo import router as repo_router
+from app.routes.ask import router as ask_router
+from app.routes.repo import router as repo_router
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("repolens")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("repolens")

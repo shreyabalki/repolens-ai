@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException
-from models.schemas import AskRequest, AskResponse, SourceCitation
-from services.retriever import search_chunks
-from services.llm_service import generate_answer
-from services.repository_store import get_repository
+from app.models.schemas import AskRequest, AskResponse, SourceCitation
+from app.services.retriever import search_chunks
+from app.services.llm_service import generate_answer
+from app.services.repository_store import get_repository
 
 router = APIRouter()
 

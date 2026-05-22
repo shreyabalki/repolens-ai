@@ -1,7 +1,7 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException
-from models.schemas import RepoUploadRequest, RepoUploadResponse, RepositoryStatusResponse
-from services.ingestion_service import ingest_repository
-from services.repository_store import create_repository, get_repository
+from app.models.schemas import RepoUploadRequest, RepoUploadResponse, RepositoryStatusResponse
+from app.services.ingestion_service import ingest_repository
+from app.services.repository_store import create_repository, get_repository
 
 router = APIRouter()
 

@@ -58,5 +58,8 @@ curl -X POST http://127.0.0.1:8000/ask \
 
 ```bash
 python -m compileall backend/app
-cd backend && python -m unittest tests/test_services.py
+cd backend && python -m unittest tests/test_services.py tests/test_routes.py
 ```
+
+
+CI runs the same compile + test checks via `.github/workflows/backend-tests.yml`.

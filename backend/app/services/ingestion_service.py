@@ -1,7 +1,7 @@
-from services.chunker import chunk_repository_files
-from services.repo_loader import clone_repository, read_repository_files
-from services.repository_store import update_repository
-from services.retriever import store_chunks
+from app.services.chunker import chunk_repository_files
+from app.services.repo_loader import clone_repository, read_repository_files
+from app.services.repository_store import update_repository
+from app.services.retriever import store_chunks
 
 
 def ingest_repository(repository_id: str, repo_url: str):
