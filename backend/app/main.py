@@ -10,6 +10,9 @@ from app.routes.repo import router as repo_router
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("repolens")
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("repolens")
+
 app = FastAPI(
     title="RepoLens AI",
     description="AI-powered codebase intelligence platform",
