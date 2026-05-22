@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import List, Optional
 
 
@@ -16,7 +16,7 @@ class AskRequest(BaseModel):
 class AskResponse(BaseModel):
     question: str
     answer: str
-    sources: List[SourceCitation] = []
+    sources: List[SourceCitation] = Field(default_factory=list)
 
 
 class RepoUploadRequest(BaseModel):
