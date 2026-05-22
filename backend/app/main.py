@@ -1,14 +1,20 @@
 from fastapi import FastAPI
+from routes.ask import router as ask_router
+from routes.repo import router as repo_router
 
-app = FastAPI(title="RepoLens AI")
+app = FastAPI(
+    title="RepoLens AI",
+    description="AI-powered codebase intelligence platform",
+    version="0.1.0"
+)
+
+app.include_router(repo_router)
+app.include_router(ask_router)
+
 
 @app.get("/")
 def root():
-    return {"message": "RepoLens AI backend is running"}
-
-@app.post("/ask")
-def ask_question(question: str):
     return {
-        "question": question,
-        "answer": "RepoLens will search the repository and answer using AI."
+        "message": "RepoLens AI backend is running",
+        "docs": "/docs"
     }
