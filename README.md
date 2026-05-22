@@ -63,3 +63,14 @@ cd backend && python -m unittest tests/test_services.py tests/test_routes.py
 
 
 CI runs the same compile + test checks via `.github/workflows/backend-tests.yml`.
+
+
+## Next milestone: Retrieval evaluation
+
+A starter evaluation harness is available under `evaluation/`.
+
+Run it after uploading and indexing a repository:
+
+```bash
+python evaluation/run_eval.py --base-url http://127.0.0.1:8000 --repository-id <repository_id> --top-k 5
+```
