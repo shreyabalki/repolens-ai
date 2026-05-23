@@ -13,7 +13,7 @@ def _hash_embedding(text: str, dim: int = 64) -> List[float]:
     for token in tokens:
         digest = hashlib.sha256(token.encode("utf-8")).digest()
         for idx in range(dim):
-            vector[idx] += (digest[idx % len(digest)] / 255.0)
+            vector[idx] += digest[idx % len(digest)] / 255.0
 
     length = math.sqrt(sum(v * v for v in vector))
     if length == 0:
@@ -21,8 +21,36 @@ def _hash_embedding(text: str, dim: int = 64) -> List[float]:
     return [v / length for v in vector]
 
 
+def _openai_embedding(text: str) -> List[float]:
+    from openai import OpenAI
+
+    model = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    response = client.embeddings.create(model=model, input=text)
+    return response.data[0].embedding
+
+
+def _sentence_transformers_embedding(text: str) -> List[float]:
+    from sentence_transformers import SentenceTransformer
+
+    model_name = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    model = SentenceTransformer(model_name)
+    vec = model.encode(text)
+    return vec.tolist() if hasattr(vec, "tolist") else list(vec)
+
+
 def embed_text(text: str) -> List[float]:
-    # Placeholder local embedding for MVP; replace with provider-backed embeddings via env config.
+    provider = os.getenv("EMBEDDING_PROVIDER", "local_hash").lower()
+
+    try:
+        if provider == "openai":
+            return _openai_embedding(text)
+        if provider in {"sentence_transformers", "st"}:
+            return _sentence_transformers_embedding(text)
+    except Exception:
+        # Fallback to deterministic local embedding for resilience in MVP mode.
+        pass
+
     dim = int(os.getenv("EMBEDDING_DIM", "64"))
     return _hash_embedding(text, dim=dim)
 

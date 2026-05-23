@@ -58,7 +58,7 @@ curl -X POST http://127.0.0.1:8000/ask \
 
 ```bash
 python -m compileall backend/app
-cd backend && python -m unittest tests/test_services.py tests/test_routes.py tests/test_hybrid_retrieval.py
+cd backend && python -m unittest tests/test_services.py tests/test_routes.py tests/test_hybrid_retrieval.py tests/test_embedding_service.py
 ```
 
 
@@ -73,4 +73,15 @@ Run it after uploading and indexing a repository:
 
 ```bash
 python evaluation/run_eval.py --base-url http://127.0.0.1:8000 --repository-id <repository_id> --top-k 5
+```
+
+
+### Embedding provider configuration
+
+Set provider via environment variables:
+
+```bash
+export EMBEDDING_PROVIDER=local_hash  # openai | sentence_transformers | local_hash
+export EMBEDDING_MODEL=text-embedding-3-small
+export OPENAI_API_KEY=your_key_here
 ```
