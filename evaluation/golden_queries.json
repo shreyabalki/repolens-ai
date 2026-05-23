@@ -1,0 +1,27 @@
+[
+  {
+    "id": "q1",
+    "question": "How is repository upload handled?",
+    "expected_files": ["backend/app/routes/repo.py"]
+  },
+  {
+    "id": "q2",
+    "question": "Where is ask endpoint logic implemented?",
+    "expected_files": ["backend/app/routes/ask.py"]
+  },
+  {
+    "id": "q3",
+    "question": "How are chunks searched and ranked?",
+    "expected_files": ["backend/app/services/retriever.py"]
+  },
+  {
+    "id": "q4",
+    "question": "Where is ingestion lifecycle orchestrated?",
+    "expected_files": ["backend/app/services/ingestion_service.py"]
+  },
+  {
+    "id": "q5",
+    "question": "How are API schemas defined?",
+    "expected_files": ["backend/app/models/schemas.py"]
+  }
+]
