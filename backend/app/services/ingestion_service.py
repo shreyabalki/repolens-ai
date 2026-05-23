@@ -15,6 +15,7 @@ def ingest_repository(repository_id: str, repo_url: str):
         update_repository(repository_id, status="chunking", progress=60, files_found=len(files))
         chunks = chunk_repository_files(files)
 
+        update_repository(repository_id, status="embedding", progress=75)
         update_repository(repository_id, status="indexing", progress=85)
         indexed = store_chunks(repository_id, chunks)
 

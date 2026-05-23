@@ -51,14 +51,14 @@ curl -X POST http://127.0.0.1:8000/ask \
 
 ## Notes
 
-- Retrieval is currently keyword-based with repository scoping.
+- Hybrid retrieval now combines lexical and embedding-based scoring with repository scoping.
 - Data is persisted to local JSON files under `backend/app/data/` for MVP persistence.
 
 ### Run backend checks
 
 ```bash
 python -m compileall backend/app
-cd backend && python -m unittest tests/test_services.py tests/test_routes.py
+cd backend && python -m unittest tests/test_services.py tests/test_routes.py tests/test_hybrid_retrieval.py
 ```
 
 
