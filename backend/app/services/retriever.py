@@ -11,6 +11,9 @@ STOPWORDS = {
     "the", "a", "an", "and", "or", "to", "in", "on", "for", "of", "with", "is", "are", "be", "this", "that"
 }
 
+STOPWORDS = {
+    "the", "a", "an", "and", "or", "to", "in", "on", "for", "of", "with", "is", "are", "be", "this", "that"
+}
 
 def store_chunks(repository_id: str, chunks: List[Dict]):
     conn = get_connection()
