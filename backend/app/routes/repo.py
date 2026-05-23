@@ -1,5 +1,5 @@
 from fastapi import APIRouter, BackgroundTasks, HTTPException
-i from pydantic import HttpUrl, ValidationError, TypeAdapter
+from pydantic import HttpUrl, ValidationError, TypeAdapter
 
 from app.models.schemas import RepoUploadRequest, RepoUploadResponse, RepositoryStatusResponse
 from app.services.ingestion_service import ingest_repository
@@ -10,7 +10,7 @@ router = APIRouter()
 
 @router.post("/repositories/upload", response_model=RepoUploadResponse)
 def upload_repository(request: RepoUploadRequest, background_tasks: BackgroundTasks):
-i have mergf    try:
+    try:
         TypeAdapter(HttpUrl).validate_python(request.repo_url)
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail="Invalid repository URL") from exc

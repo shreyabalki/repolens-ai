@@ -4,8 +4,10 @@ import uuid
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
 from app.routes.ask import router as ask_router
 from app.routes.repo import router as repo_router
+from app.services.db import init_db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("repolens")
@@ -13,8 +15,13 @@ logger = logging.getLogger("repolens")
 app = FastAPI(
     title="RepoLens AI",
     description="AI-powered codebase intelligence platform",
-    version="0.2.0"
+    version="0.3.0"
 )
+
+
+@app.on_event("startup")
+def startup_event():
+    init_db()
 
 
 @app.middleware("http")

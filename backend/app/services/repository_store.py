@@ -1,72 +1,55 @@
-import json
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
-from threading import Lock
 from typing import Dict, Optional
 
-DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-REPOS_FILE = DATA_DIR / "repositories.json"
-_LOCK = Lock()
+from app.services.db import get_connection
 
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _ensure_storage():
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if not REPOS_FILE.exists():
-        REPOS_FILE.write_text("[]", encoding="utf-8")
-
-
-def _load_repositories():
-    _ensure_storage()
-    return json.loads(REPOS_FILE.read_text(encoding="utf-8"))
-
-
-def _save_repositories(repositories):
-    _ensure_storage()
-    tmp = REPOS_FILE.with_suffix(".json.tmp")
-    tmp.write_text(json.dumps(repositories, ensure_ascii=False), encoding="utf-8")
-    tmp.replace(REPOS_FILE)
+def _to_dict(row) -> Dict:
+    return dict(row)
 
 
 def create_repository(repo_url: str) -> Dict:
-    with _LOCK:
-        repositories = _load_repositories()
-        record = {
-            "repository_id": str(uuid.uuid4()),
-            "repo_url": repo_url,
-            "status": "queued",
-            "progress": 0,
-            "files_found": 0,
-            "chunks_indexed": 0,
-            "error_message": None,
-            "created_at": _now(),
-            "updated_at": _now(),
-        }
-        repositories.append(record)
-        _save_repositories(repositories)
-        return record
+    conn = get_connection()
+    repository_id = str(uuid.uuid4())
+    now = _now()
+    conn.execute(
+        """
+        INSERT INTO repositories(repository_id, repo_url, status, progress, files_found, chunks_indexed, error_message, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (repository_id, repo_url, "queued", 0, 0, 0, None, now, now),
+    )
+    conn.commit()
+    row = conn.execute("SELECT * FROM repositories WHERE repository_id = ?", (repository_id,)).fetchone()
+    conn.close()
+    return _to_dict(row)
 
 
 def update_repository(repository_id: str, **updates) -> Optional[Dict]:
-    with _LOCK:
-        repositories = _load_repositories()
-        for repo in repositories:
-            if repo["repository_id"] == repository_id:
-                repo.update(updates)
-                repo["updated_at"] = _now()
-                _save_repositories(repositories)
-                return repo
-    return None
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM repositories WHERE repository_id = ?", (repository_id,)).fetchone()
+    if not row:
+        conn.close()
+        return None
+
+    allowed = ["repo_url", "status", "progress", "files_found", "chunks_indexed", "error_message"]
+    for key in allowed:
+        if key in updates:
+            conn.execute(f"UPDATE repositories SET {key} = ? WHERE repository_id = ?", (updates[key], repository_id))
+    conn.execute("UPDATE repositories SET updated_at = ? WHERE repository_id = ?", (_now(), repository_id))
+    conn.commit()
+    updated = conn.execute("SELECT * FROM repositories WHERE repository_id = ?", (repository_id,)).fetchone()
+    conn.close()
+    return _to_dict(updated)
 
 
 def get_repository(repository_id: str) -> Optional[Dict]:
-    with _LOCK:
-        repositories = _load_repositories()
-        for repo in repositories:
-            if repo["repository_id"] == repository_id:
-                return repo
-    return None
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM repositories WHERE repository_id = ?", (repository_id,)).fetchone()
+    conn.close()
+    return _to_dict(row) if row else None

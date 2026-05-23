@@ -1,23 +1,18 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
 
+os.environ["DATABASE_PATH"] = f"str(Path(tempfile.mkdtemp()) / 'test.db')"
+
+from app.services.db import init_db
 from app.services import chunker, repository_store, retriever
 
 
 class ServiceTests(unittest.TestCase):
-    def setUp(self):
-        self.temp_dir = tempfile.TemporaryDirectory()
-        data_path = Path(self.temp_dir.name)
-
-        repository_store.DATA_DIR = data_path
-        repository_store.REPOS_FILE = data_path / "repositories.json"
-
-        retriever.DATA_DIR = data_path
-        retriever.CHUNKS_FILE = data_path / "chunks.json"
-
-    def tearDown(self):
-        self.temp_dir.cleanup()
+    @classmethod
+    def setUpClass(cls):
+        init_db()
 
     def test_repository_create_and_get(self):
         created = repository_store.create_repository("https://github.com/example/repo.git")

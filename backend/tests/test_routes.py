@@ -1,24 +1,20 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+os.environ["DATABASE_PATH"] = f"str(Path(tempfile.mkdtemp()) / 'test_routes.db')"
+
 from app.main import app
-from app.services import ingestion_service, repository_store, retriever
+from app.services import ingestion_service
+from app.services.db import init_db
 
 
 class RouteTests(unittest.TestCase):
     def setUp(self):
-        self.temp_dir = tempfile.TemporaryDirectory()
-        data_path = Path(self.temp_dir.name)
-
-        repository_store.DATA_DIR = data_path
-        repository_store.REPOS_FILE = data_path / "repositories.json"
-
-        retriever.DATA_DIR = data_path
-        retriever.CHUNKS_FILE = data_path / "chunks.json"
-
+        init_db()
         self.original_clone = ingestion_service.clone_repository
         self.original_read = ingestion_service.read_repository_files
 
@@ -32,7 +28,6 @@ class RouteTests(unittest.TestCase):
     def tearDown(self):
         ingestion_service.clone_repository = self.original_clone
         ingestion_service.read_repository_files = self.original_read
-        self.temp_dir.cleanup()
 
     def test_upload_and_status_flow(self):
         response = self.client.post("/repositories/upload", json={"repo_url": "https://github.com/example/repo.git"})
@@ -45,7 +40,6 @@ class RouteTests(unittest.TestCase):
         status_payload = status_response.json()
         self.assertEqual(status_payload["status"], "ready")
         self.assertGreaterEqual(status_payload["chunks_indexed"], 1)
-
 
     def test_upload_invalid_url(self):
         response = self.client.post("/repositories/upload", json={"repo_url": "not-a-url"})
