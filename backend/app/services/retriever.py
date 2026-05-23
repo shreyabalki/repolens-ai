@@ -30,7 +30,9 @@ def _load_chunks() -> List[Dict]:
 
 def _save_chunks(chunks: List[Dict]):
     _ensure_storage()
-    CHUNKS_FILE.write_text(json.dumps(chunks, ensure_ascii=False), encoding="utf-8")
+    tmp = CHUNKS_FILE.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(chunks, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(CHUNKS_FILE)
 
 
 def store_chunks(repository_id: str, chunks: List[Dict]):
@@ -76,6 +78,7 @@ def search_chunks(repository_id: str, question: str, top_k: int = 5):
     question_tokens = set(_normalize_tokens(question))
     question_embedding = embed_text(question)
     alpha = float(os.getenv("HYBRID_ALPHA", "0.5"))
+    alpha = max(0.0, min(alpha, 1.0))
     rows = []
 
     with _LOCK:

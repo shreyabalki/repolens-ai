@@ -27,7 +27,9 @@ def _load_repositories():
 
 def _save_repositories(repositories):
     _ensure_storage()
-    REPOS_FILE.write_text(json.dumps(repositories, ensure_ascii=False), encoding="utf-8")
+    tmp = REPOS_FILE.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(repositories, ensure_ascii=False), encoding="utf-8")
+    tmp.replace(REPOS_FILE)
 
 
 def create_repository(repo_url: str) -> Dict:

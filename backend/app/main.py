@@ -31,7 +31,7 @@ async def request_logging_middleware(request: Request, call_next):
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error on %s", request.url.path)
-    return JSONResponse(status_code=500, content={"error": "internal_server_error", "message": str(exc)})
+    return JSONResponse(status_code=500, content={"error": "internal_server_error", "message": "An unexpected server error occurred."})
 
 
 app.include_router(repo_router)

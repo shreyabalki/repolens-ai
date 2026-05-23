@@ -46,6 +46,11 @@ class RouteTests(unittest.TestCase):
         self.assertEqual(status_payload["status"], "ready")
         self.assertGreaterEqual(status_payload["chunks_indexed"], 1)
 
+
+    def test_upload_invalid_url(self):
+        response = self.client.post("/repositories/upload", json={"repo_url": "not-a-url"})
+        self.assertEqual(response.status_code, 422)
+
     def test_ask_not_found_repository(self):
         response = self.client.post("/ask", json={"repository_id": "missing", "question": "where is auth"})
         self.assertEqual(response.status_code, 404)
